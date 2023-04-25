@@ -1,10 +1,4 @@
-# Template bottom tabs with auth flow (Typescript)
-
-Typescript Template starter with React Navigation Bottom Tabs and Supabase auth using React Context
-
-# Preview
-
-![../media/authflow.png](../media/authflow.png)
+# POSDCORD Pay
 
 # Installation
 
