@@ -17,8 +17,10 @@ import {
   Button,
   useTheme,
   themeColor,
+  CheckBox,
 } from "react-native-rapi-ui";
 import { initdb } from "../../api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ({
   navigation,
@@ -27,6 +29,7 @@ export default function ({
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [checkBox, setCheckbox] = React.useState(false);
 
   async function register() {
     setLoading(true);
@@ -42,6 +45,15 @@ export default function ({
       alert(error.message);
     }
   }
+
+  React.useEffect(() => {
+    if(checkBox){
+      AsyncStorage.setItem('isBuyer', 'true');
+    }else{
+      AsyncStorage.setItem('isBuyer', 'false');
+    }
+  }, [checkBox]);
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
@@ -85,10 +97,10 @@ export default function ({
             >
               Register
             </Text>
-            <Text>Email</Text>
+            <Text>Mayhem ID</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your email"
+              placeholder="Enter your Mayhem ID"
               value={email}
               autoCapitalize="none"
               autoComplete="off"
@@ -108,6 +120,12 @@ export default function ({
               secureTextEntry={true}
               onChangeText={(text) => setPassword(text)}
             />
+        <View style={{ flexDirection: 'row', alignItems: 'center',marginTop:20,marginStart:3 }}>
+            <CheckBox value={checkBox} onValueChange={(val) => setCheckbox(val)} />
+            <Text size="md" style={{ marginLeft: 10, color: 'gray' }}>
+                Check this box if You are a Buyer
+            </Text>
+        </View>
             <Button
               text={loading ? "Loading" : "Create an account"}
               onPress={() => {

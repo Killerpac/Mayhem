@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { MainStackParamList } from "../types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Layout, Text, useTheme } from "react-native-rapi-ui";
+import { Button, Layout, Section, SectionContent, Text, themeColor, useTheme } from "react-native-rapi-ui";
 import { supabase } from "../initSupabase";
 
 export default function ({
@@ -24,7 +24,7 @@ export default function ({
       const email = user?.email;
       if (email) {
         await supabase.auth.api.resetPasswordForEmail(email);
-        alert("A password reset link has been sent to your email");
+        alert("A password reset link has been sent to your Mayhem ID");
       }
     } catch (error) {
       console.log("Error resetting password");
@@ -33,32 +33,39 @@ export default function ({
 
   return (
     <Layout>
-      <View
+      <Section
         style={{
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
+        <SectionContent>
         <Text fontWeight="bold" style={{ fontSize: 24, marginBottom: 20 }}>
           My Profile
         </Text>
+        </SectionContent>
+        <SectionContent>
         <Text style={{ fontSize: 18, marginBottom: 20 }}>
           Email: {user?.email}
         </Text>
+        </SectionContent>
+        <SectionContent>
         <Button
           text="Reset Password"
           onPress={resetPassword}
-          style={{ marginBottom: 20, backgroundColor: isDarkmode ? "#444" : "#eee" }}
-          textStyle={{ color: isDarkmode ? "#fff" : "#000" }}
+          style={{ marginBottom: 20 }}
+          color={themeColor.primary}
+          textStyle={{ color: themeColor.white }}
         />
         <Button
           text="Logout"
           onPress={logout}
-          style={{ backgroundColor: isDarkmode ? "#444" : "#eee" }}
-          textStyle={{ color: isDarkmode ? "#fff" : "#000" }}
+          color={themeColor.danger}
+          textStyle={{ color: themeColor.white }}
         />
-      </View>
+        </SectionContent>
+      </Section>
     </Layout>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import {
   Layout,
   TopNav,
@@ -7,33 +7,54 @@ import {
   TextInput,
   Button,
   useTheme,
+  themeColor,
+  Section,
+  SectionContent,
 } from "react-native-rapi-ui";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MainStackParamList } from "../types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import QRCode from "react-native-qrcode-svg";
-
-function validateEmail(email: string) {
-  const re = /\S+@\S+\.\S+/;
-  return re.test(email);
-}
+import { supabase } from "../initSupabase";
 
 function validateAmount(amount: string) {
   const re = /^\d+(\.\d{1,2})?$/;
   return re.test(amount);
 }
 
+async function getemailfromsupabase() {
+  const user = supabase.auth.user();
+  if(user){
+    const email = user.email;
+    return email;
+  }
+  return "";
+}
+
 export default function ReceiveScreen({
   navigation,
 }: NativeStackScreenProps<MainStackParamList, "Receive">) {
-  const [email, setemail] = useState("");
   const [amount, setAmount] = useState("");
   const { isDarkmode } = useTheme();
+  const [email, setemail] = useState("");
+  const [loading, setLoading] = useState(true);
+  React.useEffect(() => {
+
+    async function getemail() {
+
+      const emails = await getemailfromsupabase();
+      setemail(emails as string);
+      setLoading(false);
+    }
+    getemail();
+  }, [navigation]);
       
 
   return (
     <Layout>
       <TopNav
+          backgroundColor={isDarkmode ? themeColor.dark : themeColor.white}
+          borderColor={isDarkmode ? themeColor.dark : themeColor.white}
         leftContent={
           <Ionicons
             name="arrow-back"
@@ -42,7 +63,6 @@ export default function ReceiveScreen({
           />
         }
         leftAction={() => navigation.goBack()}
-        middleContent="Request Money"
       />
 
       <View style={styles.container}>
@@ -51,15 +71,8 @@ export default function ReceiveScreen({
             Receive Money
           </Text>
         </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Enter Email Address"
-            value={email}
-            onChangeText={setemail}
-            keyboardType='email-address'
-            style={styles.input}
-          />
+        <Section >
+          <SectionContent>
           <TextInput
             placeholder="Enter Amount"
             value={amount}
@@ -67,11 +80,12 @@ export default function ReceiveScreen({
             keyboardType="decimal-pad"
             style={styles.input}
           />
-        </View>
+          </SectionContent>
+        </Section>
 
-        <View style={styles.qrCodeContainer}>
+    <View style={styles.qrCodeContainer}>
           <View style={styles.qrCodeBox}>
-            {validateEmail(email) && validateAmount(amount) ? (
+            {validateAmount(amount)? (
               <QRCode
                 onError={(e:Error) => console.log(e)}
                 value={JSON.stringify({ email, amount })}
@@ -82,7 +96,19 @@ export default function ReceiveScreen({
             ) : null}
           </View>
         </View>
-      </View>
+        </View>
+        {loading && <ActivityIndicator size='large' color={themeColor.primary} style={{
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
+        opacity: 0.8,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+      }} />}
     </Layout>
   );
 }
@@ -101,7 +127,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   inputContainer: {
-    marginBottom: 50,
+    marginBottom: 30,
+    alignContent: "center",
+    alignItems: "center",
   },
   input: {
     borderColor: "#ddd",
@@ -111,8 +139,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   qrCodeContainer: {
-    alignItems: "center",
     marginTop: 20,
+    alignSelf:'center',
+    verticalAlign:'center',
   },
   qrCodeBox: {
     backgroundColor: "#fff",

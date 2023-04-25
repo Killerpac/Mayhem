@@ -36,7 +36,6 @@ export default function ({
     });
     if (!error && !user) {
       setLoading(false);
-      alert("Check your email for the login link!");
     }
     if (error) {
       setLoading(false);
@@ -89,7 +88,7 @@ export default function ({
             <Text>Email</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your email"
+              placeholder="Enter your Mayhem ID"
               value={email}
               autoCapitalize="none"
               autoComplete="off"

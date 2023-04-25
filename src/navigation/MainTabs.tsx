@@ -36,18 +36,6 @@ const MainTabs = () => {
         }}
       />
       <Tabs.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          tabBarLabel: ({ focused }) => (
-            <TabBarText focused={focused} title="Profile" />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} icon={"person"} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="About"
         component={About}
         options={{

@@ -38,6 +38,7 @@ type Props = {
   
     return (
       <FlatList
+        style={{ marginTop: -15 }}
         data={transactionsWithIds}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}

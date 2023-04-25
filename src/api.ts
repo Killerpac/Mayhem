@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Transaction } from './types/navigation';
 import { supabase } from './initSupabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 async function transferBalance(senderEmail: string, receiverEmail: string, amount: number, transaction: Transaction): Promise<{ success: boolean, error?: string }> {
@@ -21,7 +22,7 @@ async function transferBalance(senderEmail: string, receiverEmail: string, amoun
     }
     
     if (!senderData) {
-      return { success: false, error: `User with email ${senderEmail} not found` };
+      return { success: false, error: `User with Mayhem ID ${senderEmail} not found` };
     }
     
     // Check if sender has enough balance
@@ -61,7 +62,7 @@ async function transferBalance(senderEmail: string, receiverEmail: string, amoun
     }
     
     if (!receiverData) {
-      return { success: false, error: `User with email ${receiverEmail} not found` };
+      return { success: false, error: `User with Mayhem ID ${receiverEmail} not found` };
     }
     
     // Update receiver's balance and transactions
@@ -115,7 +116,7 @@ async function getBalance(email: string): Promise<number> {
         }
         
         if (!data) {
-        throw new Error(`User with email ${email} not found`);
+        throw new Error(`User with MAyhem ID ${email} not found`);
         }
         
         return data.balance;
@@ -140,7 +141,7 @@ async function getTransactions(email: string): Promise<Transaction[]> {
         }
         
         if (!data) {
-        throw new Error(`User with email ${email} not found`);
+        throw new Error(`User with Mayhen ID ${email} not found`);
         }
         
         return data.transactions;
@@ -160,11 +161,25 @@ try{
         return null;
     }
 
+    //get buyer's field from AsyncStorage
+    let buyer = await AsyncStorage.getItem('isBuyer');
+    
+    let isbuyer = true
+    if(buyer == 'false'){
+      isbuyer = false;
+    }
+
+    let balance = 0;
+    if(isbuyer){
+      balance = 400
+    }
+    
+
     const { error: insertError } = await supabase
     .from('balance')
     .insert([{
       email: email,
-      balance: 0,
+      balance: balance,
       transactions: []
     }],{returning: 'minimal'});
     

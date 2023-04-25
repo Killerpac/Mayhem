@@ -16,6 +16,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { initdb,getBalance, getTransactions } from "../api";
 import TransactionsList from "../components/transactionlist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const transactions: Transaction[] = [
 ];
@@ -44,8 +45,19 @@ export default function ({
   const { isDarkmode, setTheme } = useTheme();
   const [balance, setBalance] = useState(0);
   const [trans, setTrans] = useState(transactions);
+  const [isbuyer,setisbuyer] = useState(false);
+
+const email = supabase.auth.user()?.email;
 
 
+  AsyncStorage.getItem("isBuyer").then((value) => {
+    console.log(value);
+    if (value == "false") {
+      setisbuyer(true);
+    } else {
+      setisbuyer(false);
+    }
+  });
   // Dummy function for refreshing balance
   const refreshBalance = async () => {
     console.log("Refreshing balance...");
@@ -76,6 +88,8 @@ export default function ({
   return (
     <Layout>
       <TopNav
+      backgroundColor={isDarkmode ? themeColor.dark : themeColor.white}
+      borderColor={isDarkmode ? themeColor.dark : themeColor.white}
         middleContent="Home"
         rightContent={
           <Ionicons
@@ -96,7 +110,7 @@ export default function ({
         <Section style={{ flex: 1, marginLeft: 10, marginTop: 20 ,marginRight:10}}>
           <SectionContent style={{ paddingHorizontal: 15 }}>
             <Text fontWeight="bold" style={{ fontSize: 20, marginBottom: 10 }}>
-              Welcome!
+              {isbuyer ? "Welcome Trader!" : "Welcome Patron!"}
             </Text>
             <SectionContent 
               style={{
@@ -135,6 +149,27 @@ export default function ({
         <Section style={{ flex: 1, marginLeft: 10, marginTop:20,flexGrow:1 ,marginRight:10}}>
           <SectionContent>
             <Text fontWeight="bold" style={{ fontSize: 18 }}>
+              Mayhem ID
+            </Text>
+            <Text style={{ fontSize: 18, marginTop:5,marginBottom:5 }} >
+                {email}
+              </Text>
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              <Button
+                text="Logout"
+                status="warning"
+                outline
+                onPress={() => {
+                    supabase.auth.signOut();
+                }}
+                style={{ marginRight: 10, flex: 1 }}
+              />
+            </View>
+          </SectionContent>
+        </Section>
+        <Section style={{ flex: 1, marginLeft: 10, marginTop:20,flexGrow:1 ,marginRight:10}}>
+          <SectionContent>
+            <Text fontWeight="bold" style={{ fontSize: 18 }}>
               Send Money
             </Text>
             <View style={{ flexDirection: "row", marginTop: 10 }}>
@@ -145,11 +180,13 @@ export default function ({
                     amt: null,
                     email: null,
                   })}
+                  color={themeColor.danger}
                 style={{ marginRight: 10, flex: 1 }}
               />
               <Button
                 text="Request"
                 status="info"
+                color={themeColor.primary}
                 onPress={() => navigation.navigate("Receive")}
                 style={{ marginRight: 10, flex: 1 }}
               />

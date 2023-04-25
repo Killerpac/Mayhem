@@ -68,6 +68,8 @@ export default function MainScreen({ navigation }: Props) {
       return (
         <Layout style={{ alignItems: "center" }}>
                 <TopNav
+                      backgroundColor={isDarkmode ? themeColor.dark : themeColor.white}
+                      borderColor={isDarkmode ? themeColor.dark : themeColor.white}
         leftContent={
           <Ionicons
             name="arrow-back"
@@ -90,6 +92,8 @@ export default function MainScreen({ navigation }: Props) {
       return (
     <Layout style={{ alignItems: "center" , backgroundColor: themeColor.black100,}}>
       <TopNav
+            backgroundColor={isDarkmode ? themeColor.dark : themeColor.white}
+            borderColor={isDarkmode ? themeColor.dark : themeColor.white}
         leftContent={
           <Ionicons
             name="arrow-back"

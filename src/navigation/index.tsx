@@ -12,7 +12,7 @@ export default () => {
 	const user = auth.user;
 	return (
 		<NavigationContainer>
-			{user == null && <Loading />}
+			{auth.session == null || undefined && <Loading />}
 			{user == false && <Auth />}
 			{user == true && <Main />}
 		</NavigationContainer>

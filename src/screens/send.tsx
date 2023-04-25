@@ -8,12 +8,15 @@ import {
   Button,
   useTheme,
   themeColor,
+  Section,
+  SectionContent,
 } from "react-native-rapi-ui";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MainStackParamList, Transaction } from "../types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { checkUser, transferBalance } from "../api";
 import { supabase } from "../initSupabase";
+import QuotesCard from "../components/quotes";
 
 async function sendMoney(email: string, amount:number): Promise<{success: boolean, error?: string}|undefined>{
     if(amount <= 0 || isNaN(amount)){
@@ -50,7 +53,7 @@ export default function SendScreen({
 }: NativeStackScreenProps<MainStackParamList, "Send">) {
   const [amount, setAmount] = useState("");
   const [email, setemail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
       //get userid and amount from props
   const { isDarkmode } = useTheme();
   React.useEffect(() => {
@@ -63,14 +66,18 @@ export default function SendScreen({
         //test if amt is a number
         if(isNaN(amt)){
             alert("Invalid amount");
+            navigation.goBack();
             return;
         }
         setAmount(amt.toString());
     }
+    setLoading(false);
   }, [route.params]);
   return (
     <Layout>
       <TopNav
+            backgroundColor={isDarkmode ? themeColor.dark : themeColor.white}
+            borderColor={isDarkmode ? themeColor.dark : themeColor.white}
         leftContent={
           <Ionicons
             name="arrow-back"
@@ -79,19 +86,19 @@ export default function SendScreen({
           />
         }
         leftAction={() => navigation.goBack()}
-        middleContent="Send"
       />
 
       <View style={styles.container}>
         <View style={styles.headingContainer}>
           <Text fontWeight="bold" style={styles.heading}>
-            Send Money
+            Send Funds
           </Text>
         </View>
 
-        <View style={styles.inputContainer}>
+        <Section>
+          <SectionContent style={styles.inputContainer}>
         <TextInput
-            placeholder="Enter Receiver Email"
+            placeholder="Enter Receiver Mayhem ID"
             value={email}
             onChangeText={setemail}
             keyboardType='email-address'
@@ -104,7 +111,8 @@ export default function SendScreen({
             keyboardType="decimal-pad"
             style={styles.input}
           />
-        </View>
+          </SectionContent>
+        </Section>
         <View style={styles.buttonContainer}>
           <Button
             text="Scan QR Code"
@@ -112,6 +120,7 @@ export default function SendScreen({
               // Navigate to QR code scanner screen
               navigation.navigate("SecondScreen");
             }}
+            color={themeColor.danger}
             style={styles.button}
           />
           <Button text="Send" style={styles.button} onPress={async () => {
@@ -132,6 +141,7 @@ export default function SendScreen({
               }
           }}/>
         </View>
+        <QuotesCard/>
       </View>
       {loading && <ActivityIndicator size='large' color={themeColor.primary} style={{
         backgroundColor: 'rgba(52, 52, 52, 0.8)',
@@ -167,14 +177,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     justifyContent: "space-between",
-    display: "flex",
+    height: 150,
   },
   input: {
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    margin: 50,
   },
   buttonContainer: {
     marginTop: 20,
